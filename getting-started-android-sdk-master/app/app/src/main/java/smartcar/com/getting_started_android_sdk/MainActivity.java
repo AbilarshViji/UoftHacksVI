@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
                 CLIENT_ID,
                 REDIRECT_URI,
                 SCOPE,
-                true,
+                false,//TODO was true before
                 new SmartcarCallback() {
             @Override
             public void handleResponse(final SmartcarResponse smartcarResponse) {

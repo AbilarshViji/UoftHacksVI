@@ -23,8 +23,10 @@ package smartcar.com.getting_started_android_sdk;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Button;
 
 public class DisplayInfoActivity  extends AppCompatActivity {
 
@@ -41,5 +43,11 @@ public class DisplayInfoActivity  extends AppCompatActivity {
 
         ViewGroup layout = (ViewGroup) findViewById(R.id.activity_display_info);
         layout.addView(textView);
+        final Button unlockButton = findViewById(R.id.unlockButton);
+        unlockButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                //TODO Make the car unlock
+            }
+        });
     }
 }
