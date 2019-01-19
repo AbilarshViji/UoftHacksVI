@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">getting-started-android-sdk</string>
-    <string name="smartcar_auth_scheme">sc[yourClientId]</string>
+    <string name="smartcar_auth_scheme">sc3d32b516-2b8a-43a5-8337-e3d45aee7455</string>
     <string name="smartcar_auth_host">exchange</string>
-    <string name="client_id">[yourClientId]</string>
+    <string name="client_id">3d32b516-2b8a-43a5-8337-e3d45aee7455</string>
     <string name="app_server">[yourAppServer]</string>
 </resources>
