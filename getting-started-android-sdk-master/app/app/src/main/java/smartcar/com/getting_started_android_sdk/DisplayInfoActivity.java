@@ -28,6 +28,27 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Button;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.util.Log;
+
+import com.smartcar.sdk.*;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.*;
+
+import java.lang.Boolean;
+
+
 public class DisplayInfoActivity  extends AppCompatActivity {
 
     @Override
@@ -47,6 +68,7 @@ public class DisplayInfoActivity  extends AppCompatActivity {
         unlockButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 //TODO Make the car unlock
+
             }
         });
     }

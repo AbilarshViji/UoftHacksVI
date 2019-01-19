@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         appContext = getApplicationContext();
         CLIENT_ID = getString(R.string.client_id);
-        REDIRECT_URI = "sc" + getString(R.string.client_id) + "://exchange";
+        REDIRECT_URI = "http://b9de84cb.ngrok.io/exchange";
         SCOPE = new String[]{"read_vehicle_info"};
 
         smartcarAuth = new SmartcarAuth(
