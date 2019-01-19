@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.util.Log;
 
@@ -16,6 +18,9 @@ import java.io.IOException;
 
 import okhttp3.*;
 
+import java.lang.Boolean;
+
+
 public class MainActivity extends AppCompatActivity {
 
     private static String CLIENT_ID;
@@ -23,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private static String[] SCOPE;
     private Context appContext;
     private SmartcarAuth smartcarAuth;
+    private Boolean faceVerify = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,8 +98,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button connectButton = (Button) findViewById(R.id.connect_button);
-
+        final Button connectButton = (Button) findViewById(R.id.connect_button);
         smartcarAuth.addClickHandler(appContext, connectButton);
+        connectButton.setVisibility(View.GONE);
+
+        // Face verification
+        final Button faceVeriButton = (Button) findViewById(R.id.verification_button);
+        faceVeriButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Runs face verification module and returns bool into faceVerify
+                faceVerify = true;
+                //If face is verified, display connect button and hide face verify button
+                if (faceVerify){
+                    connectButton.setVisibility(View.VISIBLE);
+                    faceVeriButton.setVisibility(View.GONE);
+                } else {
+                    connectButton.setVisibility(View.GONE);
+                    faceVeriButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+
+
     }
 }
