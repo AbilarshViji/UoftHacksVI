@@ -1,6 +1,6 @@
 CLIENT_ID = '99895afc-444b-4f66-ab77-d86e21e4909e'
 CLIENT_SECRET = '11d38821-f9d8-4945-974f-f7fdd9aab9da'
-REDIRECT_URI = 'http://localhost:8000/exchange'
+REDIRECT_URI = 'https://eba09900.ngrok.io/exchange'
 import smartcar
 from flask import Flask, redirect, request, jsonify
 from flask_cors import CORS
@@ -25,6 +25,7 @@ client = smartcar.AuthClient(
 @app.route('/login', methods=['GET'])
 def login():
     auth_url = client.get_auth_url()
+    print(auth_url)
     return redirect(auth_url)
 
 
@@ -54,8 +55,8 @@ def vehicle():
     info = vehicle.info()
     print(info)
     print(access['access_token'])
-
-    return jsonify(location)
+    vehicle.unlock()
+    return jsonify(vehicle.unlock())
 
 
 if __name__ == '__main__':

@@ -3,5 +3,5 @@
     <string name="smartcar_auth_scheme">sc99895afc-444b-4f66-ab77-d86e21e4909e</string>
     <string name="smartcar_auth_host">exchange</string>
     <string name="client_id">99895afc-444b-4f66-ab77-d86e21e4909e</string>
-    <string name="app_server">http://100.65.214.142:8000</string>
+    <string name="app_server">https://b9de84cb.ngrok.io/login</string>
 </resources>
