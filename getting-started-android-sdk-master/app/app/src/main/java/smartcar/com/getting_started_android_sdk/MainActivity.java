@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.smartcar.sdk.*;
 
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private Context appContext;
     private SmartcarAuth smartcarAuth;
     private Boolean faceVerify = false;
+    final OkHttpClient client = new OkHttpClient().newBuilder().followRedirects(true).followSslRedirects(true).build();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +39,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         appContext = getApplicationContext();
         final TextView authText = (TextView) findViewById(R.id.testText);
+
         CLIENT_ID = getString(R.string.client_id);
         REDIRECT_URI = "sc" + getString(R.string.client_id) + "://exchange";
-        SCOPE = new String[]{"read_vehicle_info", "read_location", "control_security", "control_security:unlock", "control_security:lock", "read_odometer"};
+        // SCOPE = new String[]{"read_vehicle_info", "read_location", "control_security", "control_security:unlock", "control_security:lock", "read_odometer"};
+        SCOPE = new String[]{"read_vehicle_info"};
 
         smartcarAuth = new SmartcarAuth(
                 CLIENT_ID,
@@ -50,13 +54,18 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void handleResponse(final SmartcarResponse smartcarResponse) {
 
-                        final OkHttpClient client = new OkHttpClient();
+                        Log.d("SmartCode", smartcarResponse.getCode() + " -- " + smartcarResponse.getState());
+
+                        if (true) {
+                            unlock();
+                            return;
+                        }
 
                         // send request to exchange the auth code for the access token
                         Request exchangeRequest = new Request.Builder()
                                 // Android emulator runs in a VM, therefore localhost will be the
                                 // emulator's own loopback address
-                                .url("https://b9de84cb.ngrok.io/exchange?code=" + smartcarResponse.getCode())
+                                .url(getString(R.string.app_server) + "/exchange?code=" + smartcarResponse.getCode())
                                 .build();
 
                         //TODO textview
@@ -70,42 +79,18 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onResponse(Call call, Response response) throws IOException {
+                                Log.d("RES", "Code:" + response.code());
                                 Log.d("RES", response.body().string());
+                                if (response.code() == 200) {
+                                    unlock();
+                                } else {
+                                    Log.e("Unlock", "Unable to unlock, bad status code");
+
+                                }
                             }
                         });
 
-                        // send request to retrieve the vehicle info
-//                        Request infoRequest = new Request.Builder()
-//                                .url(getString(R.string.app_server) + "/vehicle")
-//                                .build();
-//
-//                        client.newCall(infoRequest).enqueue(new Callback() {
-//                            @Override
-//                            public void onFailure(Call call, IOException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                            @Override
-//                            public void onResponse(Call call, Response response) throws IOException {
-//                                try {
-//                                    String jsonBody = response.body().string();
-//                                    JSONObject JObject = null;
-//                                    JObject = new JSONObject(jsonBody);
-//
-//
-//                                    String make = JObject.getString("make");
-//                                    String model = JObject.getString("model");
-//                                    String year = JObject.getString("year");
-//
-//                                    Intent intent = new Intent(appContext, DisplayInfoActivity.class);
-//                                    intent.putExtra("INFO", make + " " + model + " " + year);
-//                                    startActivity(intent);
-//                                } catch (JSONException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                        });
-//
+
 //                        authText.setText(smartcarResponse.getCode());
 
 
@@ -137,5 +122,45 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void unlock() {
+        //send request to retrieve the vehicle info
+        Request infoRequest = new Request.Builder()
+                .url(getString(R.string.app_server) + "/vehicle")
+                .build();
 
+        client.newCall(infoRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                int jsonBody = response.code();
+
+                if (jsonBody == 200) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Vehicle Unlocked", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+
+//                    JSONObject JObject = null;
+//                    JObject = new JSONObject(jsonBody);
+//
+//
+//                    String make = JObject.getString("make");
+//                    String model = JObject.getString("model");
+//                    String year = JObject.getString("year");
+//
+//                    Intent intent = new Intent(appContext, DisplayInfoActivity.class);
+//                    intent.putExtra("INFO", make + " " + model + " " + year);
+//                    startActivity(intent);
+            }
+        });
+
+    }
 }
