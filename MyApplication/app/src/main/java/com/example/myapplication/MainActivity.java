@@ -175,10 +175,9 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray json = new JSONArray(response.body().string());
 
                 // Find the first in list -- not null and nonempty
-                if ((json(0) != null) && (json.length() != 0)){
-                    return json;
+                if ((json.getJSONArray(0) != null) && (json.length() != 0)) {
+                    json.getJSONArray(0)= getString(faceid);
                 }
-
                 // Pull face-ID
                 //String candidateFaceID = "json[0]";
 
