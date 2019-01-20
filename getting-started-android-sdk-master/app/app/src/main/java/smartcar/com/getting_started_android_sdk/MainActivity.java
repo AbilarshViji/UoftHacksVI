@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.smartcar.sdk.*;
 
@@ -34,11 +35,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         appContext = getApplicationContext();
+        final TextView authText = (TextView) findViewById(R.id.testText);
         CLIENT_ID = getString(R.string.client_id);
-        REDIRECT_URI = "http://b9de84cb.ngrok.io/exchange";
-        SCOPE = new String[]{"read_vehicle_info"};
+        REDIRECT_URI = "sc" + getString(R.string.client_id) + "://exchange";
+        SCOPE = new String[]{"read_vehicle_info", "read_location", "control_security", "control_security:unlock", "control_security:lock", "read_odometer"};
 
         smartcarAuth = new SmartcarAuth(
                 CLIENT_ID,
@@ -46,60 +47,73 @@ public class MainActivity extends AppCompatActivity {
                 SCOPE,
                 false,//TODO was true before
                 new SmartcarCallback() {
-            @Override
-            public void handleResponse(final SmartcarResponse smartcarResponse) {
-
-                final OkHttpClient client = new OkHttpClient();
-
-                // Request can not run on the Main Thread
-                // Main Thread is used for UI and therefore can not be blocked
-                new Thread(new Runnable() {
                     @Override
-                    public void run() {
+                    public void handleResponse(final SmartcarResponse smartcarResponse) {
+
+                        final OkHttpClient client = new OkHttpClient();
 
                         // send request to exchange the auth code for the access token
                         Request exchangeRequest = new Request.Builder()
-                            // Android emulator runs in a VM, therefore localhost will be the
-                            // emulator's own loopback address
-                            .url(getString(R.string.app_server) + "/exchange?code=" + smartcarResponse.getCode())
-                            .build();
+                                // Android emulator runs in a VM, therefore localhost will be the
+                                // emulator's own loopback address
+                                .url("https://b9de84cb.ngrok.io/exchange?code=" + smartcarResponse.getCode())
+                                .build();
 
-                        try {
-                            client.newCall(exchangeRequest).execute();
-                        } catch (IOException e) {}
+                        //TODO textview
+//                        System.out.println(smartcarResponse.getCode());
+
+                        client.newCall(exchangeRequest).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                Log.d("RES", response.body().string());
+                            }
+                        });
 
                         // send request to retrieve the vehicle info
-                        Request infoRequest = new Request.Builder()
-                            .url(getString(R.string.app_server) + "/vehicle")
-                            .build();
+//                        Request infoRequest = new Request.Builder()
+//                                .url(getString(R.string.app_server) + "/vehicle")
+//                                .build();
+//
+//                        client.newCall(infoRequest).enqueue(new Callback() {
+//                            @Override
+//                            public void onFailure(Call call, IOException e) {
+//                                e.printStackTrace();
+//                            }
+//
+//                            @Override
+//                            public void onResponse(Call call, Response response) throws IOException {
+//                                try {
+//                                    String jsonBody = response.body().string();
+//                                    JSONObject JObject = null;
+//                                    JObject = new JSONObject(jsonBody);
+//
+//
+//                                    String make = JObject.getString("make");
+//                                    String model = JObject.getString("model");
+//                                    String year = JObject.getString("year");
+//
+//                                    Intent intent = new Intent(appContext, DisplayInfoActivity.class);
+//                                    intent.putExtra("INFO", make + " " + model + " " + year);
+//                                    startActivity(intent);
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                        });
+//
+//                        authText.setText(smartcarResponse.getCode());
 
-                        try {
-                            Response response = client.newCall(infoRequest).execute();
 
-                            String jsonBody = response.body().string();
-                            JSONObject JObject = new JSONObject(jsonBody);
-
-                            String make = JObject.getString("make");
-                            String model = JObject.getString("model");
-                            String year = JObject.getString("year");
-
-                            Intent intent = new Intent(appContext, DisplayInfoActivity.class);
-                            intent.putExtra("INFO", make + " " + model + " " + year);
-                            startActivity(intent);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
                     }
-                }).start();
-
-
-            }
-        });
+                });
 
         final Button connectButton = (Button) findViewById(R.id.connect_button);
-        smartcarAuth.addClickHandler(appContext, connectButton);
+        smartcarAuth.addClickHandler(appContext, connectButton, true);
         connectButton.setVisibility(View.GONE);
 
         // Face verification
@@ -110,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 //Runs face verification module and returns bool into faceVerify
                 faceVerify = true;
                 //If face is verified, display connect button and hide face verify button
-                if (faceVerify){
+                if (faceVerify) {
                     connectButton.setVisibility(View.VISIBLE);
                     faceVeriButton.setVisibility(View.GONE);
                 } else {
@@ -121,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
-
     }
+
+
 }

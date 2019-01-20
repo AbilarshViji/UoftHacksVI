@@ -170,7 +170,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private Bitmap photo;
 
     @Override
