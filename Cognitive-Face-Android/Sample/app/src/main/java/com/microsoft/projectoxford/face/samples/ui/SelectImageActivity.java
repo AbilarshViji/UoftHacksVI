@@ -111,7 +111,7 @@ public class SelectImageActivity extends AppCompatActivity {
             try {
                 File file = File.createTempFile("IMG_", ".jpg", storageDir);
                 mUriPhotoTaken = Uri.fromFile(file);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, mUriPhotoTaken);
+                //intent.putExtra(MediaStore.EXTRA_OUTPUT, mUriPhotoTaken);
                 startActivityForResult(intent, REQUEST_TAKE_PHOTO);
             } catch (IOException e) {
                 setInfo(e.getMessage());
