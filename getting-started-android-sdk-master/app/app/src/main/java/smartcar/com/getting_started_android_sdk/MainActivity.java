@@ -42,8 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         CLIENT_ID = getString(R.string.client_id);
         REDIRECT_URI = "sc" + getString(R.string.client_id) + "://exchange";
-        // SCOPE = new String[]{"read_vehicle_info", "read_location", "control_security", "control_security:unlock", "control_security:lock", "read_odometer"};
-        SCOPE = new String[]{"read_vehicle_info"};
+        SCOPE = new String[]{"read_vehicle_info", "read_location", "control_security", "control_security:unlock", "control_security:lock", "read_odometer"};
 
         smartcarAuth = new SmartcarAuth(
                 CLIENT_ID,
@@ -53,23 +52,13 @@ public class MainActivity extends AppCompatActivity {
                 new SmartcarCallback() {
                     @Override
                     public void handleResponse(final SmartcarResponse smartcarResponse) {
-
                         Log.d("SmartCode", smartcarResponse.getCode() + " -- " + smartcarResponse.getState());
-
-                        if (true) {
-                            unlock();
-                            return;
-                        }
-
                         // send request to exchange the auth code for the access token
                         Request exchangeRequest = new Request.Builder()
                                 // Android emulator runs in a VM, therefore localhost will be the
                                 // emulator's own loopback address
                                 .url(getString(R.string.app_server) + "/exchange?code=" + smartcarResponse.getCode())
                                 .build();
-
-                        //TODO textview
-//                        System.out.println(smartcarResponse.getCode());
 
                         client.newCall(exchangeRequest).enqueue(new Callback() {
                             @Override
@@ -81,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onResponse(Call call, Response response) throws IOException {
                                 Log.d("RES", "Code:" + response.code());
                                 Log.d("RES", response.body().string());
-                                if (response.code() == 200) {
+                                if (response.code() == 500) { //TODO should be 200 when live
                                     unlock();
                                 } else {
                                     Log.e("Unlock", "Unable to unlock, bad status code");
@@ -89,37 +78,12 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         });
-
-
-//                        authText.setText(smartcarResponse.getCode());
-
-
+                        authText.setText(smartcarResponse.getCode());
                     }
                 });
 
         final Button connectButton = (Button) findViewById(R.id.connect_button);
         smartcarAuth.addClickHandler(appContext, connectButton, true);
-        connectButton.setVisibility(View.GONE);
-
-        // Face verification
-        final Button faceVeriButton = (Button) findViewById(R.id.verification_button);
-        faceVeriButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Runs face verification module and returns bool into faceVerify
-                faceVerify = true;
-                //If face is verified, display connect button and hide face verify button
-                if (faceVerify) {
-                    connectButton.setVisibility(View.VISIBLE);
-                    faceVeriButton.setVisibility(View.GONE);
-                } else {
-                    connectButton.setVisibility(View.GONE);
-                    faceVeriButton.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-
     }
 
     private void unlock() {
@@ -147,20 +111,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 }
-
-//                    JSONObject JObject = null;
-//                    JObject = new JSONObject(jsonBody);
-//
-//
-//                    String make = JObject.getString("make");
-//                    String model = JObject.getString("model");
-//                    String year = JObject.getString("year");
-//
-//                    Intent intent = new Intent(appContext, DisplayInfoActivity.class);
-//                    intent.putExtra("INFO", make + " " + model + " " + year);
-//                    startActivity(intent);
             }
         });
-
     }
 }
