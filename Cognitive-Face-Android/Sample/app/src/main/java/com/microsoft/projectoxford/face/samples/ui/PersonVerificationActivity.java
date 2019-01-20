@@ -451,7 +451,7 @@ public class PersonVerificationActivity extends AppCompatActivity {
             setInfo(verificationResult);
         }
         if (result.isIdentical){
-            //TODO implement like all the car shit here
+            //TODO implement like all the car stuff here
             CLIENT_ID = getString(R.string.client_id);
             REDIRECT_URI = "sc" + getString(R.string.client_id) + "://exchange";
             SCOPE = new String[]{"read_vehicle_info", "read_location", "control_security", "control_security:unlock", "control_security:lock", "read_odometer"};
@@ -460,7 +460,7 @@ public class PersonVerificationActivity extends AppCompatActivity {
                     CLIENT_ID,
                     REDIRECT_URI,
                     SCOPE,
-                    false,//TODO was true before
+                    false,
                     new SmartcarCallback() {
                         @Override
                         public void handleResponse(final SmartcarResponse smartcarResponse) {
