@@ -481,7 +481,7 @@ public class PersonVerificationActivity extends AppCompatActivity {
                                 public void onResponse(Call call, Response response) throws IOException {
                                     Log.d("RES", "Code:" + response.code());
                                     Log.d("RES", response.body().string());
-                                    if (response.code() == 500) { //TODO should be 200 when live
+                                    if (response.code() == 200) { //TODO should be 200 when live
                                         unlock();
                                     } else {
                                         Log.e("Unlock", "Unable to unlock, bad status code");
