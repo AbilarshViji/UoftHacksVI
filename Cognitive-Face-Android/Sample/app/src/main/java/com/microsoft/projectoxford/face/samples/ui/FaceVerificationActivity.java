@@ -232,8 +232,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
 
         if(resultCode == RESULT_OK) {
             // If image is selected successfully, set the image URI and bitmap.
-            Bitmap bitmap = ImageHelper.loadSizeLimitedBitmapFromUri(
-                    data.getData(), getContentResolver());
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             if (bitmap != null) {
                 // Image is select but not detected, disable verification button.
                 setVerifyButtonEnabledStatus(false);
