@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:onClick="launchCamera"
         android:layout_height="wrap_content"
-        android:text="Browse for a face image"
+        android:text="Unlock facial identification"
         android:id="@+id/button1"
         android:layout_alignParentBottom="true"/>
 </RelativeLayout>

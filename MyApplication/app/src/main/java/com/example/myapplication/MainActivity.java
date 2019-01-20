@@ -50,6 +50,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import static org.json.JSONObject.NULL;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -123,13 +125,26 @@ public class MainActivity extends AppCompatActivity {
                 .scheme("https")
                 .host("westcentralus.api.cognitive.microsoft.com")
                 .addPathSegments("face/v1.0/detect")
+                //.addPathSegments("face/v1.0/verify")
                 //Request parameters. All of them are optional.
                 //.addQueryParameter("overload", "stream")
                 .addQueryParameter("returnFaceId", "true")
+             //   .addQueryParameter("returnFaceId1", "true")  //not SURE
+               // .addQueryParameter("returnFaceId2", "true")  //????
                 .addQueryParameter("returnFaceLandmarks", "false")
                 .addQueryParameter("returnFaceAttributes", faceAttributes)
+              //  .addQueryParameter("returnisIdentical", isIdentical)
+               // .addQueryParameter("returnconfidence", confidence )
                 .build();
 
+        //POST {"westcentralus.api.cognitive.microsoft.com"}/face/v1.0/verify
+        /*
+        //store faceid1=picture stored url pic from fb
+        //store faceid2 = picture taken from cam on phone
+        if (faceId1==faceId2){
+            //unlock the car
+        }
+        */
         Log.d("URL", httpUrl.toString());
 
 
@@ -157,7 +172,20 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d("RES", response.body().string());
+                JSONArray json = new JSONArray(response.body().string());
+
+                // Find the first in list -- not null and nonempty
+                if ((json(0) != null) && (json.length() != 0)){
+                    return json;
+                }
+
+                // Pull face-ID
+                //String candidateFaceID = "json[0]";
+
+                // COMPARE TO ACTUAL
+                if (ACTUAL_ID.equals(candidateFaceID)) {
+                    Log.d("STATUS", "Verified");
+                }
             }
         });
     }
@@ -225,7 +253,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String faceAttributes =
             "age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure,noise";
     //ADDED
+   // private static final String isIdentical =
+     //       "isIdentical"; //combination of both???
 
+   // private static final String confidence =
+      //      "confidence";
+
+    private static final String ACTUAL_ID = "426bd060-f756-4216-831e-f4150d9f2d9f";
 }
 
 
