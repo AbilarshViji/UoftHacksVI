@@ -28,6 +28,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import okhttp3.Call;
@@ -172,22 +173,40 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                JSONArray json = new JSONArray(response.body().string());
 
-                // Find the first in list -- not null and nonempty
-                if ((json.getJSONArray(0) != null) && (json.length() != 0)) {
-                    json.getJSONArray(0)= getString(faceid);
+                //Log.d("Status", "verifieD YASSSSS");
+                JSONArray json = null;
+                String candidateFaceID = null;
+                try {
+                    json = new JSONArray(response.body().string());
+                    if ((json.length() > 0) && (json.getJSONArray(0) != null)) {
+                        JSONObject candidate = json.getJSONObject(0);
+                        candidateFaceID = candidate.getString("faceId");
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+                //Log.d("Status", "verifieD YASSSSS");
+                // Find the first in list -- not null and nonempty
+
                 // Pull face-ID
                 //String candidateFaceID = "json[0]";
 
                 // COMPARE TO ACTUAL
                 if (ACTUAL_ID.equals(candidateFaceID)) {
                     Log.d("STATUS", "Verified");
+                   // System.out.println("Verified");
                 }
+                else{
+                    Log.d("STATUS","Unverified");
+                }
+
             }
         });
     }
+
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     public void launchCamera(View view) {
@@ -258,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
    // private static final String confidence =
       //      "confidence";
 
-    private static final String ACTUAL_ID = "426bd060-f756-4216-831e-f4150d9f2d9f";
+    private static final String ACTUAL_ID = "236ee63b-7257-4558-ac95-24ae919255b9";
 }
 
 
